@@ -14,5 +14,15 @@ public class Link
 	this.node2 = node2;
 	this.delay = delay;
     }
+    
+    public Node getNode1()
+    {
+	return node1;
+    }
+    
+    public Node getNode2()
+    {
+	return node2;
+    }
 
 }

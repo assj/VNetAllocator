@@ -19,55 +19,18 @@ public class PhysicalNode extends Node
 	this.allocatedVirtualNodes = new ArrayList<VirtualNode>();
     }
 
-    public boolean allocateVirtualNode(VirtualNode virtualNode)
+    public double getNormalizedRemainingResources()
     {
-	boolean canAllocateVirtualNode = canAllocateVirtualNode(virtualNode);
-	
-	if (canAllocateVirtualNode)
-	{
-	    this.allocatedVirtualNodes.add(virtualNode);
-	    this.remainingProcessingCapacity -= virtualNode.processingCapacity;
-	    this.remainingAmoutOfMemory -= virtualNode.amountOfMemory;
-	    this.remainingAmountOfDisk -= virtualNode.amountOfDisk;
-	}
-	
-	return canAllocateVirtualNode;
-    }
-
-    private boolean canAllocateVirtualNode(VirtualNode virtualNode)
-    {
-	boolean canAllocateVirtualNode = false;
-
-	if (virtualNode != null)
-	{
-	    double possibleRemainingProcessingCapacity = this.remainingProcessingCapacity
-		    - virtualNode.processingCapacity;
-	    double possibleRemainingAmountOfMemory = this.remainingAmoutOfMemory - virtualNode.amountOfMemory;
-	    double possibleRemainingAmountOfDisk = this.remainingAmountOfDisk - virtualNode.amountOfDisk;
-
-	    if (possibleRemainingProcessingCapacity >= 0 && possibleRemainingAmountOfMemory >= 0
-		    && possibleRemainingAmountOfDisk >= 0)
-	    {
-		canAllocateVirtualNode = true;
-	    }
-	}
-
-	return canAllocateVirtualNode;
-
-    }
-
-    public double getNormalizedRemainingCapacity()
-    {
-	double normalizedRemainingCapacity = 0;
+	double normalizedRemainingResources = 0;
 
 	double normalizedRemainingProcessingCapacity = this.remainingProcessingCapacity / this.processingCapacity;
 	double normalizedRemainingMemoryAmount = this.remainingAmoutOfMemory / this.amountOfMemory;
 	double normalizedRemainingDiskAmount = this.remainingAmountOfDisk / this.amountOfDisk;
 
-	normalizedRemainingCapacity = (normalizedRemainingProcessingCapacity + normalizedRemainingMemoryAmount
+	normalizedRemainingResources = (normalizedRemainingProcessingCapacity + normalizedRemainingMemoryAmount
 		+ normalizedRemainingDiskAmount) / 3;
 
-	return normalizedRemainingCapacity;
+	return normalizedRemainingResources;
     }
 
     public double getRemainingProcessingCapacity()
@@ -83,5 +46,10 @@ public class PhysicalNode extends Node
     public double getRemainingAmountOfDisk()
     {
 	return remainingAmountOfDisk;
+    }
+    
+    public List<VirtualNode> getAllocatedVirtualNodes()
+    {
+	return allocatedVirtualNodes;
     }
 }

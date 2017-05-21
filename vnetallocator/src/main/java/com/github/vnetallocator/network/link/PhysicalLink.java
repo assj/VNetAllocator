@@ -16,29 +16,13 @@ public class PhysicalLink extends Link
 	this.remainingCapacity = capacity;
     }
     
-    public boolean allocateVirtualLink(VirtualLink virtualLink)
+    public double getNormalizedRemainingCapacity()
     {
-	boolean canAllocateVirtualLink = canAllocateVirtualLink();
+	double normalizedRemainingCapacity = 0;
 	
-	if(canAllocateVirtualLink)
-	{
-	    this.allocatedVirtialLinks[this.capacity - this.remainingCapacity] = virtualLink;
-	    this.remainingCapacity--;
-	}
+	normalizedRemainingCapacity = this.remainingCapacity / this.capacity;
 	
-	return canAllocateVirtualLink;
-    }
-    
-    private boolean canAllocateVirtualLink()
-    {
-	boolean canAllocateVirtualLink = false;
-	
-	if(this.remainingCapacity > 0)
-	{
-	    canAllocateVirtualLink = true;
-	}
-	
-	return canAllocateVirtualLink;
+	return normalizedRemainingCapacity;
     }
     
     public VirtualLink[] getAllocatedVirtialLinks()
