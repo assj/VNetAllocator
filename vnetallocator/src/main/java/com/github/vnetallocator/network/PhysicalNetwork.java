@@ -232,10 +232,10 @@ public class PhysicalNetwork implements Serializable
 	int phisicalNode2Id = physicalNode2.getId();
 	File topologyFile = new File(getClass().getClassLoader().getResource("RNP.json").getFile());
 	String topologyFilePath = topologyFile.getAbsolutePath();
-	File routerFile = new File(getClass().getClassLoader().getResource("roteador2.py").getFile());
-	String routerFilePath = routerFile.getAbsolutePath();
+	File bestRouteFinderFile = new File(getClass().getClassLoader().getResource("best_route_finder.py").getFile());
+	String bestRouteFinderFilePath = bestRouteFinderFile.getAbsolutePath();
 
-	String runtimeString = "python " + routerFilePath + " " + topologyFilePath + " " + phisicalNode1Id + " "
+	String runtimeString = "python " + bestRouteFinderFilePath + " " + topologyFilePath + " " + phisicalNode1Id + " "
 		+ phisicalNode2Id;
 
 	Process process;
@@ -243,8 +243,8 @@ public class PhysicalNetwork implements Serializable
 	try
 	{
 	    process = Runtime.getRuntime().exec(runtimeString);
-	    BufferedReader bfReaderReturned = new BufferedReader(new InputStreamReader(process.getInputStream()));
-	    String returnedString = bfReaderReturned.readLine();
+	    BufferedReader bfReaderReturn = new BufferedReader(new InputStreamReader(process.getInputStream()));
+	    String returnedString = bfReaderReturn.readLine();
 
 	    returnedString.replaceAll("[", "");
 	    returnedString.replaceAll("]", "");
