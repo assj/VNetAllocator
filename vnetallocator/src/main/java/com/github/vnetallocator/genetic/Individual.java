@@ -1,50 +1,44 @@
 package com.github.vnetallocator.genetic;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
+import java.io.Serializable;
 
 import com.github.vnetallocator.network.PhysicalNetwork;
-import com.github.vnetallocator.network.link.PhysicalLink;
-import com.github.vnetallocator.network.node.PhysicalNode;
+import com.github.vnetallocator.network.VirtualNetwork;
 
-public class Individual
+public class Individual implements Comparable<Individual>, Serializable
 {
-    private PhysicalNetwork network;
+    private static final long serialVersionUID = -8469931308144459123L;
+    
+    private PhysicalNetwork physicalNetwork;
+    private VirtualNetwork virtualNetwork;
     private double fitness;
     
-    public Individual(PhysicalNetwork network)
+    public Individual(PhysicalNetwork physicalNetwork, VirtualNetwork virtualNetwork)
     {
-	this.network = network;
+	this.physicalNetwork = physicalNetwork;
+	this.virtualNetwork = virtualNetwork;
 	this.fitness = Evaluator.evaluateIndividual(this);
     }
     
-    public List<PhysicalNode> getPhysicalNodes()
+    @Override
+    public int compareTo(Individual individual)
     {
-	List<PhysicalNode> physicalNodes = new ArrayList<PhysicalNode>();
-	
-	List<PhysicalLink> physicalLinks = this.network.getPhysicalLinks();
-	int physicalLinksSize = physicalLinks.size();
-	
-	for(int i = 0; i < physicalLinksSize; i++)
-	{
-	    PhysicalLink currentLink = physicalLinks.get(i);
-	    physicalNodes.add((PhysicalNode) currentLink.getNode1());
-	    physicalNodes.add((PhysicalNode) currentLink.getNode2());
-	}
-	
-	Collections.sort(physicalNodes);
-	
-	return physicalNodes;
+	return new Double(this.fitness).compareTo(individual.getFitness());
     }
     
-    public PhysicalNetwork getNetwork()
+    public PhysicalNetwork getPhysicalNetwork()
     {
-	return network;
+	return physicalNetwork;
+    }
+    
+    public VirtualNetwork getVirtualNetwork()
+    {
+	return virtualNetwork;
     }
     
     public double getFitness()
     {
+	this.fitness = Evaluator.evaluateIndividual(this);
 	return fitness;
     }
 }
