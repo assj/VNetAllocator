@@ -1,34 +1,42 @@
 package com.github.vnetallocator.network.node;
 
-public class Node implements Comparable<Node>
+import java.io.Serializable;
+
+public class Node implements Serializable
 {
+    private static final long serialVersionUID = 8957466252910422874L;
+    
     protected int id;
     protected double processingCapacity;//GHz
-    protected double amountOfMemory;	//MB
-    protected double amountOfDisk;	//MB
+    protected double amountOfMemory;	//GB
+    protected double amountOfDisk;	//GB
 
-    public Node(double processingCapacity, double amountOfMemory, double amountOfDisk)
+    public Node(int id, double processingCapacity, double amountOfMemory, double amountOfDisk)
     {
+	this.id = id;
 	this.processingCapacity = processingCapacity;
 	this.amountOfMemory = amountOfMemory;
 	this.amountOfDisk = amountOfDisk;
     }
-
-    @Override
-    public int compareTo(Node node)
+    
+    public int getId()
     {
-	int comparisonResult = 0;
-	
-	if(this.id > node.id)
-	{
-	    comparisonResult = 1;
-	}
-	else if(this.id < node.id)
-	{
-	    comparisonResult = -1;
-	}
-	
-	return comparisonResult;
+	return id;
     }
-
+    
+    public double getProcessingCapacity()
+    {
+	return processingCapacity;
+    }
+    
+    public double getAmountOfMemory()
+    {
+	return amountOfMemory;
+    }
+    
+    public double getAmountOfDisk()
+    {
+	return amountOfDisk;
+    }
+    
 }

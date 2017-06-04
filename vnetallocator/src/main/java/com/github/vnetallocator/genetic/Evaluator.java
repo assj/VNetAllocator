@@ -12,8 +12,8 @@ public class Evaluator
     {
 	double individualFitness = 0;
 	
-	double physicalNodesFitness = evaluateNodesAllocation(individual.getPhysicalNodes());
-	double physicalLinksFitness = evaluateLinksAllocation(individual.getNetwork().getPhysicalLinks());
+	double physicalNodesFitness = evaluateNodesAllocation(individual.getPhysicalNetwork().getPhysicalNodes());
+	double physicalLinksFitness = evaluateLinksAllocation(individual.getPhysicalNetwork().getPhysicalLinks());
 	
 	individualFitness = physicalNodesFitness + physicalLinksFitness;
 	
@@ -48,7 +48,7 @@ public class Evaluator
 	for(int i = 0; i < physicalLinksSize; i++)
 	{
 	    PhysicalLink currentPhysicalLink = physicalLinks.get(i);
-	    remainingCapacityArray[i] = currentPhysicalLink.getNormalizedRemainingCapacity();
+	    remainingCapacityArray[i] = currentPhysicalLink.getNormalizedRemainingSpeed();
 	}
 	
 	physicalLinksFitness = MathUtils.variance(remainingCapacityArray);
