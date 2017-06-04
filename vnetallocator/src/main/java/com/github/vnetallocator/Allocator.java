@@ -70,8 +70,8 @@ public class Allocator
     {
 	String jsonRequisitionContent = null;
 
-	File requisitionGeneratorFile = new File(Allocator.class.getClassLoader().getResource("RNP.json").getFile());
-	String runtimeString = "python " + requisitionGeneratorFile.getAbsolutePath();
+	File requestGeneratorFile = new File(Allocator.class.getClassLoader().getResource("request_generator.py").getFile());
+	String runtimeString = "python " + requestGeneratorFile.getAbsolutePath();
 
 	Process process;
 
