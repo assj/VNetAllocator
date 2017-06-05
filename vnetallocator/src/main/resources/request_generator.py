@@ -4,8 +4,8 @@ import json
 import random
 delay_min = 50
 delay_max = 100
-vel_min = 0.5
-vel_max = 2
+vel_min = 0.5 * 1.0E6
+vel_max = 2 * 1.0E6
 m_min = 0.5 #ram
 m_max = 5   #ram
 p_min = 0.3 #processador
@@ -33,7 +33,7 @@ def id_maquinas(nodes):
 
 def set_links(nodes):
     id_maqs = id_maquinas(nodes)
-    links = []                                   # links = {'source':'0','target':'1','velocidade':1,'delay':2}
+    links = []                                   # links = {'source':'0','target':'1','speed':1,'delay':2}
     if len(id_maqs) == 3:
         for maq in id_maqs:
             n = random.randint(1,len(nodes))
@@ -43,7 +43,7 @@ def set_links(nodes):
             for targ in targets:
                 aux = [maq,targ]
                 aux.sort()                                    # Ordenar os ids dos pontos alfabeticamente
-                links.append([aux[0],aux[1]])                 # ids dos pontos, delay máximo e velocidade
+                links.append([aux[0],aux[1]])                 # ids dos pontos, delay máximo e speed
         aux_links = list(links)
         for link in links:
             while aux_links.count(link) > 1:
@@ -57,12 +57,12 @@ def set_links(nodes):
             link.append(vel)
             link.append(delay)
 
-        aux_json = {'node1': 0, 'node2': 1, 'velocidade': 1, 'delay': 2}
+        aux_json = {'node1': 0, 'node2': 1, 'speed': 1, 'delay': 2}
         link_json = []
         for link in links:
             aux_json['node1'] = link[0]
             aux_json['node2'] = link[1]
-            aux_json['velocidade'] = link[2]
+            aux_json['speed'] = link[2]
             aux_json['delay'] = link[3]
             link_json.append(aux_json.copy())
         return link_json
@@ -83,7 +83,7 @@ def set_links(nodes):
                 for targ in targets:
                     aux = [maq, targ]
                     aux.sort()  # Ordenar os ids dos pontos alfabeticamente
-                    links.append([aux[0], aux[1]])  # ids dos pontos, delay máximo e velocidade
+                    links.append([aux[0], aux[1]])  # ids dos pontos, delay máximo e speed
             aux_links = list(links)
             for link in links:
                 while aux_links.count(link) > 1:
@@ -98,12 +98,12 @@ def set_links(nodes):
                 link.append(delay)
 
             i+=1
-        aux_json = {'node1': '0', 'node2': '1', 'velocidade': 1, 'delay': 2}
+        aux_json = {'node1': '0', 'node2': '1', 'speed': 1, 'delay': 2}
         link_json = []
         for link in links:
             aux_json['node1'] = link[0]
             aux_json['node2'] = link[1]
-            aux_json['velocidade'] = link[2]
+            aux_json['speed'] = link[2]
             aux_json['delay'] = link[3]
             link_json.append(aux_json.copy())
         return link_json

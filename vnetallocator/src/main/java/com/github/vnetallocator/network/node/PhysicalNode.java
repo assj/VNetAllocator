@@ -16,7 +16,7 @@ public class PhysicalNode extends Node
 
     public PhysicalNode(NodeModel nodeModel)
     {
-	super(nodeModel.getId(), nodeModel.getProcessingCapacity(), nodeModel.getAmountOfMemory(), nodeModel.getAmountOfDisk());
+	super(nodeModel.getId(), nodeModel.getLabel(), nodeModel.getProcessingCapacity(), nodeModel.getAmountOfMemory(), nodeModel.getAmountOfDisk());
 	this.remainingProcessingCapacity = nodeModel.getProcessingCapacity();
 	this.remainingAmoutOfMemory = nodeModel.getAmountOfMemory();
 	this.remainingAmountOfDisk = nodeModel.getAmountOfDisk();

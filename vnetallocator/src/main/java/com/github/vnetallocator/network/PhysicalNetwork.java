@@ -32,15 +32,24 @@ public class PhysicalNetwork implements Serializable
 	this.physicalLinks = physicalLinks;
     }
 
-    public void randomlyAllocateVirtualNetwork(VirtualNetwork virtualnetwork)
+    public boolean randomlyAllocateVirtualNetwork(VirtualNetwork virtualnetwork)
     {
+	boolean wasAllocated = true;
+	
 	for (VirtualNode virtualNode : virtualnetwork.getVirtualNodes())
 	{
-	    randomlyAllocateVirtualNode(virtualNode, virtualnetwork);
+	    wasAllocated = randomlyAllocateVirtualNode(virtualNode, virtualnetwork);
+	    
+	    if(!wasAllocated)
+	    {
+		break;
+	    }
 	}
+	
+	return wasAllocated;
     }
 
-    public void randomlyAllocateVirtualNode(VirtualNode virtualNode, VirtualNetwork virtualNetwork)
+    public boolean randomlyAllocateVirtualNode(VirtualNode virtualNode, VirtualNetwork virtualNetwork)
     {
 	int numOfPhysicalNodes = this.physicalNodes.size();
 	List<Integer> physicalNodesCandidatesIndices = IntStream.range(0, numOfPhysicalNodes).boxed()
@@ -52,7 +61,7 @@ public class PhysicalNetwork implements Serializable
 
 	    if (currentPhysicalNode.getAllocatedVirtualNodes().contains(virtualNode))
 	    {
-		physicalNodesCandidatesIndices.remove(i);
+		physicalNodesCandidatesIndices.remove(Integer.valueOf(i));
 		break;
 	    }
 	}
@@ -68,25 +77,24 @@ public class PhysicalNetwork implements Serializable
 
 	    if (currentPhysicalNodeIndex > -1)
 	    {
-		physicalNodesCandidatesIndices.remove(currentPhysicalNodeIndex);
+		physicalNodesCandidatesIndices.remove(Integer.valueOf(currentPhysicalNodeIndex));
 	    }
 	}
 
 	boolean wasAllocated = false;
-	int cont = 0;
 
-	while (!wasAllocated && cont < physicalNodesCandidatesIndices.size())
+	while (!wasAllocated && !physicalNodesCandidatesIndices.isEmpty())
 	{
 	    int physicalNodesCandidateIndex = RandomUtils.getRandomElement(physicalNodesCandidatesIndices);
 	    wasAllocated = allocateAtIndex(virtualNode, physicalNodesCandidateIndex, virtualNodeLinks);
 
 	    if (!wasAllocated)
 	    {
-		physicalNodesCandidatesIndices.remove(physicalNodesCandidateIndex);
+		physicalNodesCandidatesIndices.remove(Integer.valueOf(physicalNodesCandidateIndex));
 	    }
-
-	    cont++;
 	}
+	
+	return wasAllocated;
     }
 
     private boolean allocateAtIndex(VirtualNode virtualNode, int index, List<VirtualLink> virtualLinks)
@@ -162,7 +170,7 @@ public class PhysicalNetwork implements Serializable
     {
 	for (VirtualLink virtualLink : virtualLinks)
 	{
-	    List<Integer> physicalLinksIndices = virtualLink.getPhysicalLinksIndices();
+	    List<Integer> physicalLinksIndices = new ArrayList<Integer>(virtualLink.getPhysicalLinksIndices());
 
 	    for (int physicalLinkIndex : physicalLinksIndices)
 	    {
@@ -186,7 +194,7 @@ public class PhysicalNetwork implements Serializable
 	    for (PhysicalLink currentPhysicalLink : pathInfo.getPhysicalLinksInPath())
 	    {
 		int currentPhysicalLinkIndex = this.physicalLinks.indexOf(currentPhysicalLink);
-		currentPhysicalLink.deallocateVirtualLink(currentVirtualLink);
+		currentPhysicalLink.allocateVirtualLink(currentVirtualLink);
 		currentVirtualLink.getPhysicalLinksIndices().add(currentPhysicalLinkIndex);
 	    }
 	}
@@ -235,30 +243,35 @@ public class PhysicalNetwork implements Serializable
 	File bestRouteFinderFile = new File(getClass().getClassLoader().getResource("best_route_finder.py").getFile());
 	String bestRouteFinderFilePath = bestRouteFinderFile.getAbsolutePath();
 
-	String runtimeString = "python " + bestRouteFinderFilePath + " " + topologyFilePath + " " + phisicalNode1Id + " "
-		+ phisicalNode2Id;
+	String[] runtimeStringArray = new String[]{"python",
+						   bestRouteFinderFilePath,
+						   topologyFilePath,
+						   String.valueOf(phisicalNode1Id),
+						   String.valueOf(phisicalNode2Id)};
 
 	Process process;
 
 	try
 	{
-	    process = Runtime.getRuntime().exec(runtimeString);
+	    process = Runtime.getRuntime().exec(runtimeStringArray);
 	    BufferedReader bfReaderReturn = new BufferedReader(new InputStreamReader(process.getInputStream()));
+	    
+	    bfReaderReturn.readLine();
 	    String returnedString = bfReaderReturn.readLine();
-
-	    returnedString.replaceAll("[", "");
-	    returnedString.replaceAll("]", "");
-	    returnedString.replaceAll(" ", "");
+	    bfReaderReturn.close();
+	    
+	    returnedString = returnedString.substring(1);
+	    returnedString = returnedString.substring(0, returnedString.length() - 1);
 
 	    String[] splittedReturnedString = returnedString.split(",");
 
-	    double aggregatedLinksDelay = Double.parseDouble(splittedReturnedString[0]);
+	    double aggregatedLinksDelay = Double.parseDouble(splittedReturnedString[0].trim());
 	    List<PhysicalLink> physicalLinks = new ArrayList<PhysicalLink>();
 
 	    for (int i = 1; i < splittedReturnedString.length; i++)
 	    {
-		int currentLinkIndex = Integer.parseInt(splittedReturnedString[i]);
-		physicalLinks.add(this.physicalLinks.get(currentLinkIndex));
+		int currentLinkId = Integer.parseInt(splittedReturnedString[i].trim());
+		physicalLinks.add(getLinkWithId(currentLinkId));
 	    }
 
 	    pathInfo = new PathInfo(aggregatedLinksDelay, physicalLinks);
@@ -270,6 +283,43 @@ public class PhysicalNetwork implements Serializable
 	}
 
 	return pathInfo;
+    }
+
+    private PhysicalLink getLinkWithId(int linkId)
+    {
+	PhysicalLink physicalLink = null;
+	
+	for(PhysicalLink currentPhysicalLink: this.physicalLinks)
+	{
+	    if(currentPhysicalLink.getId() == linkId)
+	    {
+		physicalLink = currentPhysicalLink;
+	    }
+	}
+	
+	return physicalLink;
+    }
+    
+    @Override
+    public String toString()
+    {
+        StringBuilder stringBuilder = new StringBuilder();
+        
+        for(PhysicalNode physicalNode: this.physicalNodes)
+        {
+            stringBuilder.append("No " + "\"" + physicalNode.getLabel() + "\"" + ": ");
+            stringBuilder.append(100 * physicalNode.getNormalizedRemainingResources() + "%\n");
+        }
+        
+        stringBuilder.append("\n");
+        
+        for(PhysicalLink physicalLink: this.physicalLinks)
+        {
+            stringBuilder.append("Link " + physicalLink.getId() + ": ");
+            stringBuilder.append(100 * physicalLink.getNormalizedRemainingSpeed() + "%\n");
+        }
+        
+        return stringBuilder.toString();
     }
 
     public List<PhysicalNode> getPhysicalNodes()
