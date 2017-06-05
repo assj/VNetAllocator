@@ -29,7 +29,7 @@ public class GeneticAlgorithm
     {
 	PhysicalNetwork bestPhysicalNetwork = null;
 	
-	int numOfNoImprovementCicles = this.populationSize / 2;
+	int numOfNoImprovementCicles = this.populationSize / 4;
 	int cont = 0;
 	Individual bestIndividual = null;
 	
@@ -53,6 +53,8 @@ public class GeneticAlgorithm
 		{
 		    bestIndividual = fittestIndividuals.get(0);
 		    cont = 0;
+		    
+		    System.out.println("Melhor fitness: " + bestIndividual.getFitness());
 		}
 		else
 		{
@@ -62,6 +64,7 @@ public class GeneticAlgorithm
 	    else
 	    {
 		bestIndividual = fittestIndividuals.get(0);
+		System.out.println("Melhor fitness: " + bestIndividual.getFitness());
 	    }
 	    
 	    if(cont >= numOfNoImprovementCicles)
@@ -81,7 +84,7 @@ public class GeneticAlgorithm
 	newIndividuals.addAll(fittestIndividuals);
 
 	int numOfFittestIndividuals = fittestIndividuals.size();
-	int numOfIndividualsToBeGenerated = numOfFittestIndividuals - this.populationSize;
+	int numOfIndividualsToBeGenerated = this.populationSize - numOfFittestIndividuals;
 	int cont = 0;
 
 	extern_while: while(true)

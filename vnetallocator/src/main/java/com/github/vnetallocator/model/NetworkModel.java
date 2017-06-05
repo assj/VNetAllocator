@@ -31,7 +31,8 @@ public class NetworkModel implements Serializable
 	VirtualNetwork virtualNetwork = null;
 
 	Map<Integer, NodeModel> virtualNodeModelMap = new HashMap<Integer, NodeModel>();
-
+	Map<Integer, VirtualNode> nodeIdToVirtualNode = new HashMap<Integer, VirtualNode>();
+	
 	for (NodeModel nodeModel : this.nodes)
 	{
 	    virtualNodeModelMap.put(nodeModel.getId(), nodeModel);
@@ -48,14 +49,24 @@ public class NetworkModel implements Serializable
 	    double delay = linkModel.getDelay();
 	    double speed = linkModel.getSpeed();
 
-	    if (!virtualNodes.contains(node1))
+	    if (!nodeIdToVirtualNode.containsKey(node1.getId()))
 	    {
 		virtualNodes.add(node1);
+		nodeIdToVirtualNode.put(node1.getId(), node1);
+	    }
+	    else
+	    {
+		node1 = nodeIdToVirtualNode.get(node1.getId());
 	    }
 
-	    if (!virtualNodes.contains(node2))
+	    if (!nodeIdToVirtualNode.containsKey(node2.getId()))
 	    {
 		virtualNodes.add(node2);
+		nodeIdToVirtualNode.put(node2.getId(), node2);
+	    }
+	    else
+	    {
+		node2 = nodeIdToVirtualNode.get(node2.getId());
 	    }
 
 	    VirtualLink virtualLink = new VirtualLink(id, node1, node2, delay, speed);
@@ -72,7 +83,8 @@ public class NetworkModel implements Serializable
 	PhysicalNetwork physicalNetwork = null;
 
 	Map<Integer, NodeModel> virtualNodeModelMap = new HashMap<Integer, NodeModel>();
-
+	Map<Integer, PhysicalNode> nodeIdToPhysicalNode = new HashMap<Integer, PhysicalNode>();
+	
 	for (NodeModel nodeModel : this.nodes)
 	{
 	    virtualNodeModelMap.put(nodeModel.getId(), nodeModel);
@@ -89,18 +101,28 @@ public class NetworkModel implements Serializable
 	    double delay = linkModel.getDelay();
 	    double speed = linkModel.getSpeed();
 
-	    if (!physicalNodes.contains(node1))
+	    if (!nodeIdToPhysicalNode.containsKey(node1.getId()))
 	    {
 		physicalNodes.add(node1);
+		nodeIdToPhysicalNode.put(node1.getId(), node1);
+	    }
+	    else
+	    {
+		node1 = nodeIdToPhysicalNode.get(node1.getId());
 	    }
 
-	    if (!physicalNodes.contains(node2))
+	    if (!nodeIdToPhysicalNode.containsKey(node2.getId()))
 	    {
 		physicalNodes.add(node2);
+		nodeIdToPhysicalNode.put(node2.getId(), node2);
+	    }
+	    else
+	    {
+		node2 = nodeIdToPhysicalNode.get(node2.getId());
 	    }
 
-	    PhysicalLink virtualLink = new PhysicalLink(id, node1, node2, delay, speed);
-	    physicalLinks.add(virtualLink);
+	    PhysicalLink physicalLink = new PhysicalLink(id, node1, node2, delay, speed);
+	    physicalLinks.add(physicalLink);
 	}
 
 	physicalNetwork = new PhysicalNetwork(physicalNodes, physicalLinks);

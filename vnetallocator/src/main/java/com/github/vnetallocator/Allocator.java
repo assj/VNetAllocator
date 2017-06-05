@@ -41,14 +41,29 @@ public class Allocator
 		    String jsonTopologyFileContent = IOUtils
 			    .toString(new FileReader(jsonTopologyFile.getAbsolutePath()));
 		    PhysicalNetwork physicalNetwork = JsonParser.parsePhysicalNetworkModel(jsonTopologyFileContent);
-
+		    
+		    System.out.println("--------------------------------------------------");
+		    System.out.println("INICIO");
+		    System.out.println("--------------------------------------------------\n");
+		    
 		    for (int i = 0; i < numOfRequisitions; i++)
 		    {
+			System.out.println("##################################################");
+			System.out.println("Iteracao " + (i + 1) + ":");
+			System.out.println("##################################################\n");
+			
 			String jsonRequisitionContent = runRequisitionGenerator();
 			VirtualNetwork virtualNetwork = JsonParser.parseVirtualNetwork(jsonRequisitionContent);
 			GeneticAlgorithm geneticAlgorithm = new GeneticAlgorithm(populationSize, physicalNetwork, virtualNetwork, mutationRate, selectionRate);
 			physicalNetwork = geneticAlgorithm.evolve();
+			
+//			System.out.println(physicalNetwork.toString());
+			System.out.println("\n##################################################");
 		    }
+		    
+		    System.out.println("\n--------------------------------------------------");
+		    System.out.println("FIM");
+		    System.out.println("--------------------------------------------------");
 		}
 		catch (IOException e)
 		{
@@ -80,6 +95,7 @@ public class Allocator
 	    process = Runtime.getRuntime().exec(runtimeString);
 	    BufferedReader bfReaderReturned = new BufferedReader(new InputStreamReader(process.getInputStream()));
 	    jsonRequisitionContent = bfReaderReturned.readLine();
+	    bfReaderReturned.close();
 	}
 	catch (IOException e)
 	{

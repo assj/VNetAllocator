@@ -10,7 +10,7 @@ public class VirtualNode extends Node
 
     public VirtualNode(NodeModel virtualNodeModel)
     {
-	super(virtualNodeModel.getId(), virtualNodeModel.getProcessingCapacity(), virtualNodeModel.getAmountOfMemory(),
+	super(virtualNodeModel.getId(), virtualNodeModel.getLabel(), virtualNodeModel.getProcessingCapacity(), virtualNodeModel.getAmountOfMemory(),
 		virtualNodeModel.getAmountOfDisk());
 	this.physicalNodeIndex = -1;
 
