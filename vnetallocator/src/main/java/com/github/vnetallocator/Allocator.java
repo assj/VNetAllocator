@@ -41,29 +41,48 @@ public class Allocator
 		    String jsonTopologyFileContent = IOUtils
 			    .toString(new FileReader(jsonTopologyFile.getAbsolutePath()));
 		    PhysicalNetwork physicalNetwork = JsonParser.parsePhysicalNetworkModel(jsonTopologyFileContent);
-		    
+
+		    long startTime = System.currentTimeMillis();
+
 		    System.out.println("--------------------------------------------------");
 		    System.out.println("INICIO");
 		    System.out.println("--------------------------------------------------\n");
-		    
+
 		    for (int i = 0; i < numOfRequisitions; i++)
 		    {
-			System.out.println("##################################################");
-			System.out.println("Iteracao " + (i + 1) + ":");
-			System.out.println("##################################################\n");
-			
+			long requisitionStartTime = System.currentTimeMillis();
 			String jsonRequisitionContent = runRequisitionGenerator();
 			VirtualNetwork virtualNetwork = JsonParser.parseVirtualNetwork(jsonRequisitionContent);
-			GeneticAlgorithm geneticAlgorithm = new GeneticAlgorithm(populationSize, physicalNetwork, virtualNetwork, mutationRate, selectionRate);
+
+			int numOfNodes = virtualNetwork.getVirtualNodes().size();
+			int numOfLinks = virtualNetwork.getVirtualLinks().size();
+
+			System.out.println("##################################################");
+			System.out
+				.println("Requisicao " + (i + 1) + " - N:" + numOfNodes + " | L:" + numOfLinks + "\n");
+
+			GeneticAlgorithm geneticAlgorithm = new GeneticAlgorithm(populationSize, physicalNetwork,
+				virtualNetwork, mutationRate, selectionRate);
 			physicalNetwork = geneticAlgorithm.evolve();
+
+			long requisitionEndTime = System.currentTimeMillis();
 			
-//			System.out.println(physicalNetwork.toString());
-			System.out.println("\n##################################################");
+			float elapsedRequisitionTime = (requisitionEndTime - requisitionStartTime) / 1000;
+			
+			System.out.printf("\nTempo decorrido: %.1f segundos\n", elapsedRequisitionTime);
+			System.out.println("##################################################\n");
 		    }
+
+		    long endTime = System.currentTimeMillis();
+
+		    float elapsedTime = (endTime - startTime) / 1000;
 		    
+		    System.out.println("Rede final: ");
+		    System.out.println(physicalNetwork.toString());
 		    System.out.println("\n--------------------------------------------------");
 		    System.out.println("FIM");
 		    System.out.println("--------------------------------------------------");
+		    System.out.printf("\nTempo decorrido: %.1f segundos\n", elapsedTime);
 		}
 		catch (IOException e)
 		{
@@ -85,7 +104,8 @@ public class Allocator
     {
 	String jsonRequisitionContent = null;
 
-	File requestGeneratorFile = new File(Allocator.class.getClassLoader().getResource("request_generator.py").getFile());
+	File requestGeneratorFile = new File(
+		Allocator.class.getClassLoader().getResource("request_generator.py").getFile());
 	String runtimeString = "python " + requestGeneratorFile.getAbsolutePath();
 
 	Process process;

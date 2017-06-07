@@ -2,13 +2,15 @@ package com.github.vnetallocator.genetic;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.ThreadLocalRandom;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 import org.apache.commons.lang3.SerializationUtils;
 
 import com.github.vnetallocator.network.PhysicalNetwork;
 import com.github.vnetallocator.network.VirtualNetwork;
 import com.github.vnetallocator.network.node.VirtualNode;
+import com.github.vnetallocator.utils.RandomUtils;
 
 public class GeneticAlgorithm
 {
@@ -29,7 +31,7 @@ public class GeneticAlgorithm
     {
 	PhysicalNetwork bestPhysicalNetwork = null;
 	
-	int numOfNoImprovementCicles = this.populationSize / 4;
+	int numOfNoImprovementCicles = 5;
 	int cont = 0;
 	Individual bestIndividual = null;
 	
@@ -112,29 +114,18 @@ public class GeneticAlgorithm
 	List<VirtualNode> virtualNodes = individual.getVirtualNetwork().getVirtualNodes();
 	int numOfNodes = virtualNodes.size();
 	int numOfNodesToBeMutated = (int) (numOfNodes * this.mutationRate);
+	List<Integer> allNodesIndices = IntStream.range(0, numOfNodes).boxed()
+		.collect(Collectors.toList());
 	List<Integer> nodesToBeMutatedIndices = new ArrayList<Integer>(numOfNodesToBeMutated);
-
+	
 	for (int i = 0; i < numOfNodesToBeMutated; i++)
 	{
-	    int chosenIndex = -1;
-
-	    if (nodesToBeMutatedIndices.isEmpty())
-	    {
-		chosenIndex = ThreadLocalRandom.current().nextInt(0, numOfNodes);
-		nodesToBeMutatedIndices.add(chosenIndex);
-	    }
-	    else
-	    {
-		do
-		{
-		    chosenIndex = ThreadLocalRandom.current().nextInt(0, numOfNodes);
-		} while (nodesToBeMutatedIndices.contains(chosenIndex));
-
-		nodesToBeMutatedIndices.add(chosenIndex);
-	    }
+	    int chosenIndex = RandomUtils.getRandomIntegerElement(allNodesIndices);
+	    allNodesIndices.remove(Integer.valueOf(chosenIndex));
+	    nodesToBeMutatedIndices.add(chosenIndex);
 	}
 
-	for (int nodesIndex : nodesToBeMutatedIndices)
+	for (int nodesIndex : allNodesIndices)
 	{
 	    VirtualNode currentVirtualNode = virtualNodes.get(nodesIndex);
 	    physicalNetwork.randomlyAllocateVirtualNode(currentVirtualNode, individual.getVirtualNetwork());
