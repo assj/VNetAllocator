@@ -4,11 +4,12 @@ import sys
 
 
 # função para eliminar rotas que não podem mais crescer
-def delet_rota_morta(rotas, r):  # é a iteração atual od while, as rotas devem ter tamanho r+2
+def delet_rota_morta(rotas, r):  # é a iteração atual do while, as rotas devem ter tamanho r+2
     aux_elimin = list(rotas)
     l = 0
     for k in range(0, len(rotas)):
-        if len(rotas[k]) < r + 2:
+        tam = len(rotas[k])
+        if (len(rotas[k]) < r + 2):
             aux_elimin.pop(k - l)
             l += 1
     return aux_elimin
@@ -33,11 +34,27 @@ def delet_rotas_confl(rotas):
     return aux
 
 
+def conta_rotas(rot):
+    count = 0
+    for rota in rotas:
+        n = len(rota)
+        if rota[n - 1] == node_destino:
+            count += 1
+    return count
+
+
 if __name__ == "__main__":
     # Carregar arquivo com a rede em json
     topology_path = sys.argv[1];
     source_node = sys.argv[2];
     target_node = sys.argv[3];
+
+    # pra testar
+    """
+    topology_path = 'rnp.txt'
+    source_node = '4'
+    target_node = '16'
+    """
 
     node_origem = source_node
     node_destino = target_node
@@ -49,11 +66,11 @@ if __name__ == "__main__":
     teste_load = json.loads(rede_json)  # carrega o json
 
     """
-   print 'rnp'
-   print rede_json
-   print 'xxxxxxxx'
-   print teste_load['links']
-   """
+  print 'rnp'
+  print rede_json
+  print 'xxxxxxxx'
+  print teste_load['links']
+  """
 
     read_links = list(teste_load['links'])
 
@@ -117,62 +134,58 @@ if __name__ == "__main__":
             find = True
             break
     print ' '
-
+    rotas_concluidas = []
     while not (find):
         r += 1
         # eliminação de rotas que não podem mais crescer
         rotas = delet_rota_morta(rotas, r)
         rotas.sort()
-        # print 'rotas %s' % (rotas)
+        if not(rotas):
+            break
         # eliminação de rotas que chegaram ao mesmo nó, fica a que tem o menor delay
         rotas = delet_rotas_confl(rotas)
-        # print 'rotas2 %s' % (rotas)
+        #print 'rotas2 %s' % (rotas)
         aux = []
         for rota in rotas:
             k = 0
             nvi = 0
             n = len(rota)
             delay_rota = rota[0]
-            for viz in globals()[
-                rota[n - 1]]:  # Analisar os vizinhos do último node da rota, r indica o índice do último elemento
+            for viz in globals()[rota[n - 1]]:  # Analisar os vizinhos do último node da rota, r indica o índice do último elemento
                 if k == 1:
                     base = viz  # node a partir do qual estão sendo testados os vizinhos
-                if k > 1:
+                if k > 1 and (rota[n-1] != node_destino):
                     for link in read_links:
                         if link['node1'] == int(base) and link['node2'] == int(viz):
                             delay = float(link['delay'])
                             break
 
-                    if (globals()[viz][0] == 0 or globals()[viz][0] > (delay_rota + delay) and (viz != base)):
+                    if (globals()[viz][0] == 0 or globals()[viz][0] > (delay_rota + delay)) and rota.count(viz) == 0:
                         x = list(rota)
                         x.append(viz)
                         x[0] = delay_rota + delay
                         aux.append(list(x))
-
-                if viz == node_destino:
-                    find = True
-
+                        globals()[viz][0] == delay_rota + delay
+                        if viz == node_destino:
+                            rotas_concluidas.append(list(x))
+                    # find = True
                 k += 1
         if aux:
             for lis in aux:
                 rotas.append(list(lis))
 
-    rotas.sort()
-    rota_enc = []
-    for rota in rotas:
+        if len(rotas_concluidas) > 4:
+            find = True
+
+    for rota in rotas_concluidas:
         n = len(rota)
-        if rota[n - 1] == node_destino:
-            rota_enc = list(rota)
-            # print rota_enc
-            break
-
-    rota_link = []
-    rota_link.append(rota_enc[0])
-    for j in range(0, len(rota_enc) - 1):
-        for link in read_links:
-            if link['node1'] == int(rota_enc[j]) and link['node2'] == int(rota_enc[j + 1]) and j > 0:
-                delay = float(link['delay'])
-                rota_link.append(link['id'])
-                break
-
-    print rota_link
+        rota_enc = list(rota)
+        rota_link = []
+        rota_link.append(rota_enc[0])  # insere o delay
+        for j in range(0, len(rota_enc) - 1):
+            for link in read_links:
+                if link['node1'] == int(rota_enc[j]) and link['node2'] == int(rota_enc[j + 1]) and j > 0:
+                    delay = float(link['delay'])
+                    rota_link.append(link['id'])
+                    break
+        print rota_link

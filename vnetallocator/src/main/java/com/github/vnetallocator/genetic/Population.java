@@ -30,15 +30,17 @@ public class Population
 	    PhysicalNetwork currentPhysicalNetwork = SerializationUtils.clone(physicalNetwork);
 	    VirtualNetwork currentVirtualNetwork = SerializationUtils.clone(virtualNetwork);
 	    
-	    boolean wasAllocated = false;
+	    boolean wasAllocated = currentPhysicalNetwork.randomlyAllocateVirtualNetwork(currentVirtualNetwork);
 	    
-	    while(!wasAllocated)
+	    if(wasAllocated)
 	    {
-		wasAllocated = currentPhysicalNetwork.randomlyAllocateVirtualNetwork(currentVirtualNetwork);
+		Individual individual = new Individual(currentPhysicalNetwork, currentVirtualNetwork);
+		this.individuals.add(individual);
 	    }
-	    
-	    Individual individual = new Individual(currentPhysicalNetwork, currentVirtualNetwork);
-	    this.individuals.add(individual);
+	    else
+	    {
+		i--;
+	    }
 	}
     }
 

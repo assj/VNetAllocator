@@ -2,10 +2,10 @@
 import string
 import json
 import random
-delay_min = 50
-delay_max = 100
-vel_min = 0.5 * 1.0E6
-vel_max = 2 * 1.0E6
+delay_min = 75
+delay_max = 150
+vel_min = 5 * 1.0E6
+vel_max = 500 * 1.0E6
 m_min = 0.5 #ram
 m_max = 5   #ram
 p_min = 0.3 #processador
@@ -13,7 +13,7 @@ p_max = 3   #processador
 s_min = 10  #disco
 s_max = 100 #disco
 n_min = 3   #número de máquinas
-n_max = 6   #número de máquinas
+n_max = 5   #número de máquinas
 
 maquina = {'id':0, 'amountOfMemory':1, 'processingCapacity':1, 'amountOfDisk':1}
 
@@ -109,7 +109,7 @@ def set_links(nodes):
         return link_json
 
 
-n_req = 10       # número de requisições a serem geradas, cada uma será salva em um arquivo
+n_req = 1       # número de requisições a serem geradas, cada uma será salva em um arquivo
 for n in  range(0,n_req):
     nodes = []
     i = random.randint(n_min, n_max)     #Numero de maquinas entre 3 e 5
